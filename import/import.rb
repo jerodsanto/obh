@@ -33,10 +33,16 @@ data_dir = File.join(File.dirname(__FILE__), "data")
 
 bounties.remove
 
+rando = 1
+
 CSV.read("#{data_dir}/CRIME_property.csv", headers: true).each do |record|
   bounty = Bounty.new(record)
-  # binding.pry
-  bounties.insert(bounty.to_mongo) if bounty.good?
+
+  if bounty.good?
+    bounties.insert(bounty.to_mongo.merge({rando: rando}))
+    rando += 1
+  end
 end
 
+bounties.create_index "rando"
 puts "#{bounties.count} bounties ready to be hunted."
