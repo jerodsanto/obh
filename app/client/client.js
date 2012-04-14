@@ -30,8 +30,9 @@ var OBH = {
     }
   },
   addPages: function( names ) {
-    
-    OBH.addPage()
+    _.each(names, function( name ) {
+      OBH.addPage( name );
+    });
   }
 };
 
@@ -39,5 +40,5 @@ Meteor.startup(function () {
   //$( '<link>' ).attr( 'href', 'jquery.mobile-1.1.0.css' ).appendTo( 'head' );
   $.getScript( 'jquery.mobile-1.1.0.js' );
 
-  OBH.addPage(s [ 'splash', 'bounty' ] );
+  OBH.addPages( [ 'splash', 'bounty' ] );
 });
