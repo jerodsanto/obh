@@ -3,17 +3,26 @@
 // };
 
 var OBH = {
-  templates: {
-    bounty: function() {
-      return Template.bounty;
+  events: {
+    getPageTransitions: function( eventMap ) {
+      var events = {};
+
+      _.each(eventMap, function( pageName, selector ) {
+        events[ selector ] = function() {
+          OBH.addPage( pageName );
+          OBH.changePage( pageName );
+        };
+      });
+
+      return events;
     },
+  },
+  templates: {
     splash: function() {
-      Template.splash.events = {
-        'click .single': function() {
-          OBH.addPage( 'bounty' );
-          OBH.changePage( 'bounty' );
-        }
-      };
+      Template.splash.events = OBH.events.getPageTransitions({
+        'click .single': 'bounty',
+        'click .battle': 'waiting'
+      });
 
       return Template.splash;
     }
@@ -26,8 +35,12 @@ var OBH = {
     var template = OBH.templates[ name ];
 
     if ( template ) {
-      $( document.body ).append( Meteor.ui.render( template( vars ) ) );
+      content = template( vars );
+    } else {
+      content = Template[ name ]; 
     }
+
+    $( document.body ).append( Meteor.ui.render( content ) );
   },
   addPages: function( names ) {
     _.each(names, function( name ) {
@@ -37,8 +50,7 @@ var OBH = {
 };
 
 Meteor.startup(function () {
-  //$( '<link>' ).attr( 'href', 'jquery.mobile-1.1.0.css' ).appendTo( 'head' );
   $.getScript( 'jquery.mobile-1.1.0.js' );
 
-  OBH.addPages( [ 'splash', 'bounty' ] );
+  OBH.addPages( [ 'splash', 'bounty', 'waiting' ] );
 });
