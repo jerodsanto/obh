@@ -1,6 +1,7 @@
 require "rubygems"
 require "mongo"
 require "csv"
+require "date"
 
 class Bounty
   def initialize(csv_record)
@@ -10,6 +11,7 @@ class Bounty
     @value        = csv_record["approx_value"].to_f
     @quantity     = csv_record["quantity"].to_i || 1 rescue 1
     @description  = csv_record["description"].strip rescue ""
+    @recovered    = recovered?(csv_record["recovered_date"])
   end
 
   def good?
@@ -17,6 +19,14 @@ class Bounty
     @how_affected == "STOLEN" &&
     @type != "MONEY" &&
     @value > 0
+  end
+
+  # all the unrecovered bounties have a date of 01/01/1900 12:00 AM
+  def recovered?(date_string)
+    date_string.strip[6..9].to_i > 1900
+  rescue => e
+    puts "error with: #{date_string}"
+    raise e
   end
 
   def to_mongo
