@@ -1,8 +1,14 @@
+.borderbox() {
+  -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
+     -moz-box-sizing: border-box; /* FF1+ */
+          box-sizing: border-box;
+}
+
 body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
-  font-size: 200%;
+  font-size: 140%;
 }
 #splash {
   text-align: center;
@@ -17,10 +23,11 @@ body {
     font-weight: bold;
 
     li {
-      box-sizing: border-box;
       float: left;
       width: 50%;
       padding: 0 .5em;
+
+      .borderbox();
 
       &:first-child {
         border-radius: 1em 0 0 1em;
@@ -33,9 +40,78 @@ body {
     }
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   #splash ol.mode li {
     width: 100%;
     float: none;
+  }
+}
+
+.bounty {
+  img {
+    max-height: 140px;
+  }
+
+  label {
+    width: auto;
+    font-weight: bold;
+  }
+
+  input[type=number] {
+    width: 80%;
+    border: none !important;
+    box-shadow: none;
+    background: inherit;
+    font-size: 200%;
+    font-style: italic;
+    padding: 0;
+    margin-bottom: .5em;
+    text-align: center;
+  }
+
+  div.ui-slider {
+    display: block;
+    width: 80%;
+  }
+
+  .score {
+    display: none;
+  }
+  .quantity {
+    text-align: right;
+    width: 34%;
+
+    .value {
+      font-size: 160%;
+    }
+  }
+  .type {
+    width: 64%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .type,
+  .quantity {
+    vertical-align: top;
+    font-size: 90%;
+    display: inline-block;
+  }
+  .inputhint {
+    padding-top: 1em;
+  }
+
+  &.right {
+    background: green;
+  }
+  &.wrong {
+    background: red;
+  }
+  &.right,
+  &.wrong {
+    text-shadow: none !important;
+  }
+  &.right .score,
+  &.wrong .score {
+    display: block;
   }
 }

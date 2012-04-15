@@ -1,5 +1,7 @@
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
   <title>Omaha Bounty Hunter</title>
   <link rel="stylesheet"  href="jquery.mobile-1.1.0.css">
 </head>
@@ -18,16 +20,35 @@
   </div>
 </template>
 
+<template name="game">
+  <div id="game">
+    {{#each bounties}}
+      {{> bounty}}
+    {{/each}}
+  </div>
+</template>
+
 <template name="bounty">
-  <div id="bounty" data-role="page">
+  <div class="bounty" data-role="page">
     <div data-role="content">
-      <img src="http://placekitten.com/320/320">
-      <div data-role="fieldcontain">
-        <label for="slider">Input slider:</label>
-        <input type="range" name="slider" id="slider" value="25" min="0" max="100"  />
-      </div>
+      <img src="http://placekitten.com/320/200">
+      <!-- DATA PROBLEMS: ___________ etc -->
+      <h2>{{description}}</h2>
+      <!-- DATA PROBLEMS: 'OTHER' -->
+      <div class="type">{{type}}</div>
+      {{#if quantity}}
+        <div class="quantity">QUANTITY <div class="value">{{quantity}}</div></div>
+      {{/if}}
+      <div class="inputhint">is worth about</div>
+      <label>${{{getSliderHtml value}}}</label>
+      <p class="timer"></p>
+      {{> scoreboard}}
     </div>
   </div>
+</template>
+
+<template name="scoreboard">
+  <p class="score">Score: {{score}} consecutive</p>
 </template>
 
 <template name="waiting">
