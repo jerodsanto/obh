@@ -8,10 +8,11 @@ class Bounty
     @code         = csv_record["rb_number"].strip rescue ""
     @how_affected = csv_record["how_affected"].strip rescue ""
     @type         = csv_record["type"].strip rescue ""
+    @type = "??????" if @type == "OTHER"
     @value        = csv_record["approx_value"].to_f
     @quantity     = csv_record["quantity"].to_i rescue 1
     @quantity = 1 if @quantity < 1
-    @description  = csv_record["description"].strip rescue ""
+    @description  = csv_record["description"].strip.gsub(/_+/, "") rescue ""
     @recovered    = recovered?(csv_record["recovered_date"])
   end
 
