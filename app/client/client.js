@@ -61,7 +61,7 @@
         url: 'http://ajax.googleapis.com/ajax/services/search/images',
         data: {
           v: '1.0',
-          imgsz: 'small|medium',
+          imgsz: 'medium|large',
           rsz: 1,
           q: bounty.description
         },
