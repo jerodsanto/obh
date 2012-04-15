@@ -4,7 +4,7 @@ var OBH = {
       Template.splash.events = {
         'click .single': function() {
           OBH.addPage( 'bounty' );
-          Meteor.call( 'startSingle', function(error, result) {
+          Meteor.call( 'startSingle', function( error, result ) {
             Session.set( 'uuid', result );
             Meteor.call( 'join', Session.get( 'uuid' ) );
             Meteor.subscribe( 'bounties-' + Session.get( 'uuid' ) );
