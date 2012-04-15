@@ -53,6 +53,29 @@
           $timer = $bounty.find( '.timer' ),
           counter = OBH.TIME_TO_GUESS;
 
+      $.ajax({
+        dataType: 'jsonp',
+        url: 'http://ajax.googleapis.com/ajax/services/search/images',
+        data: {
+          v: '1.0',
+          imgsz: 'medium|large',
+          rsz: 1,
+          q: bounty.description
+        },
+        success: function(data) {
+          var results = data.responseData.results;
+          if (results.length) {
+            var src = results[0].url,
+                $img = $bounty.find( 'img' ),
+                originalSrc = $img.attr( 'src' );
+
+            $img.attr( 'src', src ).bind('error', function() {
+              $img.attr( 'src', originalSrc );
+            });
+          }
+        }
+      });
+
       $guess.bind( 'change.obh-guess', function( event, ui ) {
         var $t = $( this );
 
@@ -195,37 +218,6 @@
     startingGuess = min;
 
     return '<p><span class="max">$' + max + '</span><span class="min">$' + min + '</span></p><input type="range" name="slider" value="' + startingGuess + '" min="' + min + '" max="' + max + '" step="' + step + '" class="guess">';
-  });
-
-  Handlebars.registerHelper( 'getPicture', function() {
-    var bounty = this;
-
-    // TODO put into queue
-    $.ajax({
-      dataType: 'jsonp',
-      url: 'http://ajax.googleapis.com/ajax/services/search/images',
-      data: {
-        v: '1.0',
-        imgsz: 'medium|large',
-        rsz: 1,
-        q: bounty.description
-      },
-      success: function(data) {
-        var results = data.responseData.results;
-        if (results.length) {
-          var $bounty = $( '#bounty-' + bounty._id ),
-              src = results[0].url,
-              $img = $bounty.find( 'img' ),
-              originalSrc = $img.attr( 'src' );
-
-          $img.attr( 'src', src ).bind('error', function() {
-            $img.attr( 'src', originalSrc );
-          });
-        }
-      }
-    });
-
-    return 'obh-pending-image.png';
   });
 
 })();
