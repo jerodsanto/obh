@@ -18,11 +18,11 @@
             Bounties.find().observe({
               added: function(bounty) {
                 Meteor.flush();
-                if ( count === 0 ) {
-                  OBH.showBounty( 0, bounty.value );
-                }
+                $( '.bounty' ).eq( count ).data( 'bounty', bounty );
 
-                $( '.bounty' ).eq( count ).data( 'hiddenValue', bounty.value );
+                if ( count === 0 ) {
+                  OBH.showBounty( 0 );
+                }
 
                 count++;
               }
@@ -35,8 +35,7 @@
 
         return Template.splash;
       },
-      game: function()
-      {
+      game: function() {
         Template.game.bounties = function() {
 
           return Bounties.find();
@@ -45,8 +44,7 @@
         return Template.game;
       }
     },
-    showBounty: function( index, value /*optional*/ )
-    {
+    showBounty: function( index ) {
       var $bounty = $( '.bounty' ).eq( index );
 
       if ( !$bounty.length ) {
@@ -54,25 +52,27 @@
         return;
       }
 
-      value = value || $bounty.data( 'hiddenValue' );
+      var bounty = $bounty.data( 'bounty' );
 
       $.mobile.changePage( $bounty );
 
-      // $.ajax({
-      //   datatype: 'jsonp',
-      //   jsonp: 'jsonFlickrApi',
-      //   url: 'http://api.flickr.com/services/rest/',
-      //   data: {
-      //     api_key: '3d4581691fa4eb407c030cd308965b78',
-      //     method: 'flickr.photos.search',
-      //     sort: 'interestingness-desc',
-      //     text: bounty.description,
-      //     format: 'json',
-      //     per_page: 1
-      //   }
-      // }).done(function(data) {
-      //   console.log('WOOOOO: ', data);
-      // });
+      $.ajax({
+        dataType: 'jsonp',
+        url: 'http://ajax.googleapis.com/ajax/services/search/images',
+        data: {
+          v: '1.0',
+          imgsz: 'small|medium',
+          rsz: 1,
+          q: bounty.description
+        },
+        success: function(data) {
+          var results = data.responseData.results;
+          if (results.length) {
+            var src = results[0].url;
+            $bounty.find( 'img' ).attr( 'src', src );
+          }
+        }
+      });
 
       var $guess = $bounty.find( '.guess' ),
           $timer = $bounty.find( '.timer' ),
@@ -80,7 +80,7 @@
 
       function timer() {
         if ( counter <= 0 ) {
-          var actual = value,
+          var actual = bounty.value,
               guess = $guess.val(),
               percentage = ( Math.abs( actual - guess ) * 100 / actual ).toFixed( 2 );
 
