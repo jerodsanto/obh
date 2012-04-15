@@ -9,7 +9,8 @@ class Bounty
     @how_affected = csv_record["how_affected"].strip rescue ""
     @type         = csv_record["type"].strip rescue ""
     @value        = csv_record["approx_value"].to_f
-    @quantity     = csv_record["quantity"].to_i || 1 rescue 1
+    @quantity     = csv_record["quantity"].to_i rescue 1
+    @quantity = 1 if @quantity < 1
     @description  = csv_record["description"].strip rescue ""
     @recovered    = recovered?(csv_record["recovered_date"])
   end
@@ -30,14 +31,18 @@ class Bounty
   end
 
   def to_mongo
-    instance_variables.each_with_object({}) do |ivar, hash|
-      hash[ivar.to_s.gsub("@", "")] = instance_variable_get(ivar)
-    end
+    {
+      type: @type,
+      description: @description,
+      value: @value,
+      quantity: @quantity
+    }
   end
 end
 
-mongo = Mongo::Connection.new("localhost", 3002)
-db = mongo.db("meteor")
+mongo_uri = ENV["MONGOHQ_URL"] || "mongodb://localhost:3002/meteor"
+db_name = mongo_uri.slice(/\/(\w+)\z/, 1)
+db = Mongo::Connection.from_uri(mongo_uri).db(db_name)
 bounties = db.collection("bounties")
 data_dir = File.join(File.dirname(__FILE__), "data")
 
@@ -55,4 +60,5 @@ CSV.read("#{data_dir}/CRIME_property.csv", headers: true).each do |record|
 end
 
 bounties.create_index "rando"
-puts "#{bounties.count} bounties ready to be hunted."
+size = (bounties.stats["storageSize"] / 1024.0 / 1024.0).round(2)
+puts "#{bounties.count} bounties ready to be hunted. Total size is #{size} MB."
