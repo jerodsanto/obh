@@ -9,13 +9,13 @@
 <body></body>
 
 <template name="splash">
-  <div id="splash" data-role="page">
+  <div id="splash" data-role="page" data-theme="a">
     <div data-role="content">
       <img src="obh-logo.png">
-      <ol class="mode">
-        <li><a class="single" data-role="button">Single Player</a></li>
-        <li><a class="battle" data-role="button">Battle Mode</a></li>
-      </ol>
+      <div class="instructions">
+        Try to guess how much each stolen item is worth. Each item was stolen in 2011.
+      </div>
+      <a class="single" data-role="button">Start</a>
     </div>
   </div>
 </template>
@@ -28,19 +28,24 @@
   </div>
 </template>
 
+<template name="finalscore">
+</template>
+
 <template name="bounty">
-  <div class="bounty" data-role="page">
+  <div class="bounty" data-role="page" data-theme="a">
     <div data-role="content">
-      <img src="http://placekitten.com/320/200">
-      <!-- DATA PROBLEMS: ___________ etc -->
-      <h2>{{description}}</h2>
-      <!-- DATA PROBLEMS: 'OTHER' -->
-      <div class="type">{{type}}</div>
-      {{#if quantity}}
-        <div class="quantity">QUANTITY <div class="value">{{quantity}}</div></div>
-      {{/if}}
-      <div class="inputhint">is worth about</div>
-      <label>${{{getSliderHtml value}}}</label>
+      <div class="picture">
+        <img src="obh-pending-image.png">
+      </div>
+      <h2>
+        {{description}}
+        {{#if quantity}}
+          <span class="quantity">x {{quantity}}</span>
+        {{/if}}
+      </h2>
+      <div class="type">Category: {{type}}</div>
+      <div class="inputhint">is worth about <span class="guess-value">$1</span></div>
+      <label>{{{getSliderHtml value}}}</label>
       <p class="timer"></p>
       {{> scoreboard}}
     </div>
@@ -49,12 +54,4 @@
 
 <template name="scoreboard">
   <p class="score">Score: {{score}} consecutive</p>
-</template>
-
-<template name="waiting">
-  <div id="waiting" data-role="page">
-    <div data-role="content">
-      Waiting for opponent...
-    </div>
-  </div>
 </template>

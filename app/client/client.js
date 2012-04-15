@@ -2,8 +2,9 @@
 
   var OBH = {
     GUESS_MARGIN_OF_ERROR: 30, // percent
-    TIME_TO_GUESS: 5, // seconds
+    TIME_TO_GUESS: 7, // seconds
     TIME_AFTER_GUESS_BEFORE_NEXT_BOUNTY: 3000, // ms
+    DISCRETE_GUESS_CHUNKS: 10,
     templates: {
       splash: function() {
         Template.splash.events = {
@@ -27,9 +28,6 @@
                 count++;
               }
             });
-          },
-          'click .battle': function() {
-            $.mobile.changePage( $( '#waiting' ) );
           }
         };
 
@@ -75,27 +73,34 @@
       });
 
       var $guess = $bounty.find( '.guess' ),
+          $guessValue = $bounty.find( '.guess-value' ),
           $timer = $bounty.find( '.timer' ),
           counter = OBH.TIME_TO_GUESS;
+
+      $guess.bind( 'change.obh-guess', function( event, ui ) {
+        var $t = $( this );
+
+          $guessValue.html( '$' + $t.val() );
+          $t.trigger( 'blur' );
+      });
 
       function timer() {
         if ( counter <= 0 ) {
           var actual = bounty.value,
               guess = $guess.val(),
-              percentage = ( Math.abs( actual - guess ) * 100 / actual ).toFixed( 2 );
+              offset = Math.abs( actual - guess ),
+              percentage = ( offset * 100 / actual ).toFixed( 2 );
 
-          $guess.slider('disable')
-                .bind( 'change', function(event, ui) {
-                  $( this ).val( guess );
-                });
+          $guess.slider( 'disable' )
+            .unbind( 'change.obh-guess' );
 
-          $timer.html( 'Actual: ' + actual + ', Off: ' + percentage + '%' );
+          $timer.html( 'Actual: ' + actual + ', Off by $' + offset );
 
           if ( percentage > OBH.GUESS_MARGIN_OF_ERROR ) {
-            $bounty.removeClass( 'right' ).addClass( 'wrong' );
+            $bounty.addClass( 'wrong' );
             // TODO show final score and call to action
           } else {
-            $bounty.removeClass( 'wrong' ).addClass( 'right' );
+            $bounty.addClass( 'right' );
 
             Session.set( 'score', Session.get( 'score' ) + 1 );
 
@@ -145,16 +150,18 @@
   Meteor.startup(function () {
     $.getScript( 'jquery.mobile-1.1.0.js' );
 
-    $( document.body ).obhAddPages( [ 'splash', 'game', 'waiting' ] );
+    $( document.body ).obhAddPages( [ 'splash', 'game' ] );
 
     Session.set( 'score', 0 );
   });
 
   Handlebars.registerHelper( 'getSliderHtml', function( value ) {
-    var max = ( value * ( Math.random() + 1 ) ).toFixed( 2 ),
-        guess = ( max * .5 ).toFixed( 2 );
+    var min = 1,
+        max = ( value * ( Math.random() + 1 ) ),
+        step = parseInt( max / OBH.DISCRETE_GUESS_CHUNKS, 10 ),
+        guess = 1; //( max * .5 ).toFixed( 2 );
 
-    return '<input type="range" name="slider" value="' + guess + '" min="0" max="' + max + '" class="guess">';
+    return '<input type="range" name="slider" value="' + guess + '" min="' + min + '" max="' + max + '" step="' + step + '" class="guess">';
   });
 
 })();

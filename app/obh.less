@@ -10,34 +10,22 @@ body {
   padding: 0;
   font-size: 140%;
 }
+
+@media (min-width: 700px) {
+  div.ui-content {
+    width: 500px;
+    margin: 0 auto;
+  }
+}
+
 #splash {
   text-align: center;
   background: #000;
   background: rgba(0,0,0,.9);
   color: #fff;
 
-  ol.mode {
-    list-style-type: none;
-    padding: 0;
-    margin: 1em;
-    font-weight: bold;
-
-    li {
-      float: left;
-      width: 50%;
-      padding: 0 .5em;
-
-      .borderbox();
-
-      &:first-child {
-        border-radius: 1em 0 0 1em;
-      }
-
-      &:last-child {
-        border-right-width: 3px;
-        border-radius: 0 1em 1em 0;
-      }
-    }
+  .instructions {
+    text-align: center;
   }
 }
 @media (max-width: 700px) {
@@ -48,8 +36,16 @@ body {
 }
 
 .bounty {
+  .picture {
+    text-align: center;
+
+    img {
+      text-align: left;
+    }
+  }
+
   img {
-    max-height: 140px;
+    height: 200px;
   }
 
   label {
@@ -58,43 +54,24 @@ body {
   }
 
   input[type=number] {
-    width: 80%;
-    border: none !important;
-    box-shadow: none;
-    background: inherit;
-    font-size: 200%;
-    font-style: italic;
+    display: none;
+  }
+  .inputhint {
     padding: 0;
     margin-bottom: .5em;
-    text-align: center;
+  }
+  .guess-value {
+    font-size: 200%;
+    font-style: italic;
   }
 
   div.ui-slider {
     display: block;
-    width: 80%;
+    width: 90%;
   }
 
   .score {
     display: none;
-  }
-  .quantity {
-    text-align: right;
-    width: 34%;
-
-    .value {
-      font-size: 160%;
-    }
-  }
-  .type {
-    width: 64%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .type,
-  .quantity {
-    vertical-align: top;
-    font-size: 90%;
-    display: inline-block;
   }
   .inputhint {
     padding-top: 1em;
