@@ -1,28 +1,16 @@
-// Template.splash.greeting = function () {
-//   return "Welcome to obh.";
-// };
-
 var OBH = {
-  events: {
-    getPageTransitions: function( eventMap ) {
-      var events = {};
-
-      _.each(eventMap, function( pageName, selector ) {
-        events[ selector ] = function() {
-          OBH.addPage( pageName );
-          OBH.changePage( pageName );
-        };
-      });
-
-      return events;
-    },
-  },
   templates: {
     splash: function() {
-      Template.splash.events = OBH.events.getPageTransitions({
-        'click .single': 'bounty',
-        'click .battle': 'waiting'
-      });
+      Template.splash.events = {
+        'click .single': function() {
+          OBH.addPage( 'bounty' );
+          OBH.changePage( 'bounty' );
+        },
+        'click .battle': function() {
+          OBH.addPage( 'waiting' );
+          OBH.changePage( 'waiting' );
+        }
+      };
 
       return Template.splash;
     }
