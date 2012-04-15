@@ -4,6 +4,11 @@ var OBH = {
       Template.splash.events = {
         'click .single': function() {
           OBH.addPage( 'bounty' );
+          Meteor.call( 'startSingle', function(error, result) {
+            Session.set( 'uuid', result );
+            Meteor.call( 'join', Session.get( 'uuid' ) );
+            Meteor.subscribe( 'bounties-' + Session.get( 'uuid' ) );
+          } );
           OBH.changePage( 'bounty' );
         },
         'click .battle': function() {
@@ -25,7 +30,7 @@ var OBH = {
     if ( template ) {
       content = template( vars );
     } else {
-      content = Template[ name ]; 
+      content = Template[ name ];
     }
 
     $( document.body ).append( Meteor.ui.render( content ) );
