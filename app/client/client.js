@@ -2,7 +2,7 @@
 
   var OBH = {
     GUESS_MARGIN_OF_ERROR: 30, // percent
-    TIME_TO_GUESS: 3, // seconds
+    TIME_TO_GUESS: 8, // seconds
     TIME_AFTER_GUESS_BEFORE_NEXT_BOUNTY: 3000, // ms
     DISCRETE_GUESS_CHUNKS: 10,
     TIME_BEFORE_FINAL_SCREEN: 2500,
@@ -80,6 +80,7 @@
 
           if ( guess == actual ) {
             $result.find( '.drilled-it' ).html( 'DRILLED IT' );
+            $("audio")[0].play();
           }
 
           // TODO change this from percentage to step +/- 1
