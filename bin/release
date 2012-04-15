@@ -1,0 +1,12 @@
+#!/bin/sh
+
+BUILD_DIR=$1/app
+
+cat <<-YAML
+---
+addons:
+  - mongohq:free
+config_vars:
+default_process_types:
+  web: PATH=app/.meteor/local/usr/bin:app/.meteor/local/usr/lib/meteor/bin:bin:/usr/local/bin:/usr/bin:/bin NODE_PATH=app/.meteor/local/usr/lib/meteor/lib/node_modules MONGO_URL=\$MONGOHQ_URL node app/.meteor/local/build/main.js
+YAML
