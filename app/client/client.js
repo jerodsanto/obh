@@ -1,7 +1,6 @@
 (function() {
 
   var OBH = {
-    GUESS_MARGIN_OF_ERROR: 30, // percent
     TIME_TO_GUESS: 8, // seconds
     TIME_AFTER_GUESS_BEFORE_NEXT_BOUNTY: 3000, // ms
     DISCRETE_GUESS_CHUNKS: 10,
@@ -106,8 +105,11 @@
             $("audio")[0].play();
           }
 
-          // TODO change this from percentage to step +/- 1
-          if ( percentage > OBH.GUESS_MARGIN_OF_ERROR ) {
+          var min = parseFloat( $bounty.find( '.min ').html().replace( /\$/, '' ) ),
+              max = parseFloat( $bounty.find( '.max ').html().replace( /\$/, '' ) ),
+              step = ( max - min ) / OBH.DISCRETE_GUESS_CHUNKS;
+
+          if ( (guess < (actual - step)) || (guess > (actual + step)) ) {
             $bounty.addClass( 'wrong' );
 
             // TODO show final score and call to action
