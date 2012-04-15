@@ -9,25 +9,7 @@
       splash: function() {
         Template.splash.events = {
           'click .single': function() {
-            Meteor.call( 'startSingle', function( error, result ) {
-              Session.set( 'uuid', result );
-              Meteor.call( 'join', Session.get( 'uuid' ) );
-              Meteor.subscribe( 'bounties-' + Session.get( 'uuid' ) );
-            });
-
-            var count = 0;
-            Bounties.find().observe({
-              added: function(bounty) {
-                Meteor.flush();
-                $( '.bounty' ).eq( count ).data( 'bounty', bounty );
-
-                if ( count === 0 ) {
-                  OBH.showBounty( 0 );
-                }
-
-                count++;
-              }
-            });
+            OBH.showBounty( 0 );
           }
         };
 
@@ -150,7 +132,18 @@
   Meteor.startup(function () {
     $.getScript( 'jquery.mobile-1.1.0.js' );
 
+    Meteor.subscribe( 'bounties' );
+
     $( document.body ).obhAddPages( [ 'splash', 'game' ] );
+
+    var count = 0;
+    Bounties.find().observe( {
+      added: function( bounty ) {
+        Meteor.flush();
+        $( '.bounty' ).eq( count ).data( 'bounty', bounty );
+        count++;
+      }
+    });
 
     Session.set( 'score', 0 );
   });
