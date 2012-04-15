@@ -2,9 +2,10 @@
 
   var OBH = {
     GUESS_MARGIN_OF_ERROR: 30, // percent
-    TIME_TO_GUESS: 7, // seconds
+    TIME_TO_GUESS: 3, // seconds
     TIME_AFTER_GUESS_BEFORE_NEXT_BOUNTY: 3000, // ms
     DISCRETE_GUESS_CHUNKS: 10,
+    TIME_BEFORE_FINAL_SCREEN: 2500,
     templates: {
       splash: function() {
         Template.splash.events = {
@@ -22,6 +23,15 @@
         };
 
         return Template.game;
+      },
+      final: function()
+      {
+        Template.final.events = {
+          'click .play-again': function() {
+            document.location.href = document.location.pathname;
+          }
+        };
+        return Template.final;
       }
     },
     showBounty: function( index ) {
@@ -36,26 +46,10 @@
 
       $.mobile.changePage( $bounty );
 
-      $.ajax({
-        dataType: 'jsonp',
-        url: 'http://ajax.googleapis.com/ajax/services/search/images',
-        data: {
-          v: '1.0',
-          imgsz: 'medium|large',
-          rsz: 1,
-          q: bounty.description
-        },
-        success: function(data) {
-          var results = data.responseData.results;
-          if (results.length) {
-            var src = results[0].url;
-            $bounty.find( 'img' ).attr( 'src', src );
-          }
-        }
-      });
-
       var $guess = $bounty.find( '.guess' ),
           $guessValue = $bounty.find( '.guess-value' ),
+          $inputHint = $bounty.find( '.inputhint' ),
+          $result = $bounty.find( '.result' ),
           $timer = $bounty.find( '.timer' ),
           counter = OBH.TIME_TO_GUESS;
 
@@ -66,21 +60,38 @@
           $t.trigger( 'blur' );
       });
 
+      $guessValue.html( '$' + parseInt( $guess.val(), 10 ) );
+
       function timer() {
+        $timer.html( counter ); // + ' second' + ( counter != 1 ? 's' : '' ) );
+
         if ( counter <= 0 ) {
           var actual = bounty.value,
-              guess = $guess.val(),
+              guess = parseFloat( $guess.val() ),
               offset = Math.abs( actual - guess ),
               percentage = ( offset * 100 / actual ).toFixed( 2 );
 
           $guess.slider( 'disable' )
             .unbind( 'change.obh-guess' );
 
-          $timer.html( 'Actual: ' + actual + ', Off by $' + offset );
+          $result.find( '.actual-value' ).html( '$' + actual );
+          $inputHint.hide();
+          $result.show();
 
+          if ( guess == actual ) {
+            $result.find( '.drilled-it' ).html( 'DRILLED IT' );
+          }
+
+          // TODO change this from percentage to step +/- 1
           if ( percentage > OBH.GUESS_MARGIN_OF_ERROR ) {
             $bounty.addClass( 'wrong' );
+
             // TODO show final score and call to action
+            window.setTimeout(function()
+            {
+              $.mobile.changePage( $( '#final' ) );
+            }, OBH.TIME_BEFORE_FINAL_SCREEN);
+
           } else {
             $bounty.addClass( 'right' );
 
@@ -94,8 +105,6 @@
 
           return;
         }
-
-        $timer.html( counter + ' second' + ( counter != 1 ? 's' : '' ) + ' remaining.' );
 
         counter--;
         window.setTimeout(timer, 1000);
@@ -125,7 +134,15 @@
     });
   };
 
-  Template.scoreboard.score = function() {
+  Template.progress.bounty = function() {
+    return Session.get( 'bounty' );
+  };
+
+  Template.progress.score = function() {
+    return Session.get( 'score' );
+  };
+
+  Template.final.score = function() {
     return Session.get( 'score' );
   };
 
@@ -134,7 +151,7 @@
 
     Meteor.subscribe( 'bounties' );
 
-    $( document.body ).obhAddPages( [ 'splash', 'game' ] );
+    $( document.body ).obhAddPages( [ 'splash', 'game', 'final' ] );
 
     var count = 0;
     Bounties.find().observe( {
@@ -148,13 +165,66 @@
     Session.set( 'score', 0 );
   });
 
-  Handlebars.registerHelper( 'getSliderHtml', function( value ) {
-    var min = 1,
-        max = ( value * ( Math.random() + 1 ) ),
-        step = parseInt( max / OBH.DISCRETE_GUESS_CHUNKS, 10 ),
-        guess = 1; //( max * .5 ).toFixed( 2 );
+  Handlebars.registerHelper( 'bountyLabel', function( count ) {
+    return count != 1 ? 'bounties' : 'bounty';
+  });
 
-    return '<input type="range" name="slider" value="' + guess + '" min="' + min + '" max="' + max + '" step="' + step + '" class="guess">';
+  Handlebars.registerHelper( 'getSliderHtml', function( value ) {
+    function log10(val) {
+      return Math.log(val) / Math.log(10);
+    }
+
+    var min = -1,
+      step,
+      below = Math.round( Math.random() * 10 ),
+      above = 10 - below,
+      min,
+      max,
+      startingGuess;
+
+    while( min < 0 ) {
+      below--;
+      above++;
+      step = Math.pow( 9, Math.ceil( log10( value ) ) - 1 );
+      min = ( value - below * step ).toFixed( 2 );
+      max = ( value + above * step ).toFixed( 2 );
+    }
+
+    //startingGuess = ( max - min ) * Math.random() + min; //( max * .5 ).toFixed( 2 );
+    startingGuess = min;
+
+    return '<p><span class="max">$' + max + '</span><span class="min">$' + min + '</span></p><input type="range" name="slider" value="' + startingGuess + '" min="' + min + '" max="' + max + '" step="' + step + '" class="guess">';
+  });
+
+  Handlebars.registerHelper( 'getPicture', function() {
+    var bounty = this;
+
+    // TODO put into queue
+    $.ajax({
+      dataType: 'jsonp',
+      url: 'http://ajax.googleapis.com/ajax/services/search/images',
+      data: {
+        v: '1.0',
+        imgsz: 'medium|large',
+        rsz: 1,
+        q: bounty.description
+      },
+      success: function(data) {
+        var results = data.responseData.results;
+        if (results.length) {
+          var $bounty = $( '#bounty-' + bounty._id ),
+              src = results[0].url,
+              $img = $bounty.find( 'img' ),
+              originalSrc = $img.attr( 'src' );
+
+          $img.attr( 'src', src ).bind('error', function() {
+            $img.attr( 'src', originalSrc );
+          });
+        }
+      }
+    });
+
+    return 'obh-pending-image.png';
   });
 
 })();

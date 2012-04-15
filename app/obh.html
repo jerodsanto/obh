@@ -13,7 +13,7 @@
     <div data-role="content">
       <img src="obh-logo.png">
       <div class="instructions">
-        Try to guess how much each stolen item is worth. Each item was stolen in 2011.
+        Try to guess how much each 2011 stolen item is worth.
       </div>
       <a class="single" data-role="button">Start</a>
     </div>
@@ -28,14 +28,12 @@
   </div>
 </template>
 
-<template name="finalscore">
-</template>
-
 <template name="bounty">
-  <div class="bounty" data-role="page" data-theme="a">
+  <div id="bounty-{{_id}}" class="bounty" data-role="page" data-theme="a">
     <div data-role="content">
+      <p class="timer"></p>
       <div class="picture">
-        <img src="obh-pending-image.png">
+        <img src="{{getPicture}}">
       </div>
       <h2>
         {{description}}
@@ -43,15 +41,30 @@
           <span class="quantity">x {{quantity}}</span>
         {{/if}}
       </h2>
+      <div class="price">
+        <div class="inputhint">worth about <span class="guess-value">?</span></div>
+        <div class="result">Guess: <span class="guess-value">?</span>, <span class="drilled-it">Actual</span>: <span class="actual-value"></span></div>
+        <label>{{{getSliderHtml value}}}</label>
+      </div>
       <div class="type">Category: {{type}}</div>
-      <div class="inputhint">is worth about <span class="guess-value">$1</span></div>
-      <label>{{{getSliderHtml value}}}</label>
-      <p class="timer"></p>
-      {{> scoreboard}}
+      {{> progress}}
     </div>
   </div>
 </template>
 
-<template name="scoreboard">
-  <p class="score">Score: {{score}} consecutive</p>
+<template name="progress">
+  <p class="score">Total: {{score}} {{bountyLabel score}}</p>
+</template>
+
+<template name="final">
+  <div id="final" data-role="page" data-theme="a">
+    <div data-role="header">
+      <h2>Game Over</h2>
+    </div>
+    <div data-role="content">
+      {{> progress}}
+      <a href="http://twitter.com/home?status=I just drilled {{score}} {{bountyLabel score}} in a row on http://omahabountyhunter.com %23hackomaha" data-role="button" title="Click to send this page to Twitter!" target="_blank">Tweet Your Score!</a>
+      <a class="play-again" href="#" data-role="button">Play Again?</a>
+    </div>
+  </div>
 </template>
