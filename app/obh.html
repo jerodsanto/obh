@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <title>Omaha Bounty Hunter</title>
-  <link rel="stylesheet"  href="jquery.mobile.structure-1.1.0.css">
+  <link rel="stylesheet"  href="jquery.mobile-1.1.0.css">
 </head>
 
 <body></body>
@@ -11,10 +11,8 @@
     <div data-role="content">
       <img src="obh-logo.png">
       <ol class="mode">
-        <!-- <li><a class="single" data-role="button">Single Player</a></li>
-        <li><a class="battle" data-role="button">Battle Mode</a></li> -->
-        <li class="single">Single Player</li>
-        <li class="battle">Battle Mode</li>
+        <li><a class="single" data-role="button">Single Player</a></li>
+        <li><a class="battle" data-role="button">Battle Mode</a></li>
       </ol>
     </div>
   </div>
@@ -24,6 +22,10 @@
   <div id="bounty" data-role="page">
     <div data-role="content">
       <img src="http://placekitten.com/320/320">
+      <div data-role="fieldcontain">
+        <label for="slider">Input slider:</label>
+        <input type="range" name="slider" id="slider" value="25" min="0" max="100"  />
+      </div>
     </div>
   </div>
 </template>

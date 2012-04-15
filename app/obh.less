@@ -6,8 +6,8 @@ body {
 }
 #splash {
   text-align: center;
-  background-color: #000;
-  background-color: rgba(0,0,0,.9);
+  background: #000;
+  background: rgba(0,0,0,.9);
   color: #fff;
 
   ol.mode {
@@ -20,10 +20,7 @@ body {
       box-sizing: border-box;
       float: left;
       width: 50%;
-      padding: .5em;
-      border: 3px solid #fff;
-      border-right-width: 0;
-      cursor: pointer;
+      padding: 0 .5em;
 
       &:first-child {
         border-radius: 1em 0 0 1em;
@@ -34,5 +31,11 @@ body {
         border-radius: 0 1em 1em 0;
       }
     }
+  }
+}
+@media (max-width: 600px) {
+  #splash ol.mode li {
+    width: 100%;
+    float: none;
   }
 }

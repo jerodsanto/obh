@@ -22,7 +22,9 @@ var OBH = {
   },
   changePage: function( name )
   {
-    $.mobile.changePage( $( '#' + name ) );
+    var $page = $( '#' + name );
+
+    $.mobile.changePage( $page );
   },
   addPage: function( name, vars ) {
     var template = OBH.templates[ name ];
