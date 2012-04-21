@@ -8,7 +8,7 @@
 
 <body>
   <audio src="drilled-it.mp3">
-  Your browser does not support the <code>audio</code> element.
+    Your browser does not support the <code>audio</code> element.
   </audio>
 </body>
 
@@ -20,6 +20,7 @@
         Try to guess how much each 2011 stolen item is worth.
       </div>
       <a class="single" data-role="button">Start</a>
+      <p>Created for <a href="http://hackomaha.com/">Hack Omaha</a> by <a href="http://twitter.com/sant0sk1">@sant0sk1</a> and <a href="http://twitter.com/zachleat">@zachleat</a>.</p>
     </div>
   </div>
 </template>
@@ -68,6 +69,7 @@
     <div data-role="content">
       {{> progress}}
       <a href="http://twitter.com/home?status=I just drilled {{score}} {{bountyLabel score}} in a row on http://omahabountyhunter.com %23hackomaha" data-role="button" title="Click to send this page to Twitter!" target="_blank">Tweet Your Score!</a>
+      <a href="http://twitter.com/#!/search/omahabountyhunter.com" data-role="button" target="_blank">View Scores on Twitter</a>
       <a class="play-again" href="#" data-role="button">Play Again?</a>
     </div>
   </div>
