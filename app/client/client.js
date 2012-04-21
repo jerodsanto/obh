@@ -3,7 +3,7 @@
   var OBH = {
     TIME_TO_GUESS: 8, // seconds
     TIME_AFTER_GUESS_BEFORE_NEXT_BOUNTY: 3000, // ms
-    DISCRETE_GUESS_CHUNKS: 10,
+    DISCRETE_GUESS_CHUNKS: 7,
     TIME_BEFORE_FINAL_SCREEN: 2500,
     templates: {
       splash: function() {
@@ -100,16 +100,11 @@
           $inputHint.hide();
           $result.show();
 
-          if ( guess == actual ) {
-            $result.find( '.drilled-it' ).html( 'DRILLED IT' );
-            $("audio")[0].play();
-          }
-
-          var min = parseFloat( $bounty.find( '.min ').html().replace( /\$/, '' ) ),
-              max = parseFloat( $bounty.find( '.max ').html().replace( /\$/, '' ) ),
+          var min = parseFloat( $bounty.find( '.min ' ).html().replace( /\$/, '' ) ),
+              max = parseFloat( $bounty.find( '.max ' ).html().replace( /\$/, '' ) ),
               step = ( max - min ) / OBH.DISCRETE_GUESS_CHUNKS;
 
-          if ( (guess < (actual - step)) || (guess > (actual + step)) ) {
+          if ( ( guess < ( actual - step ) ) || ( guess > ( actual + step ) ) ) {
             $bounty.addClass( 'wrong' );
 
             // TODO show final score and call to action
@@ -120,6 +115,11 @@
 
           } else {
             $bounty.addClass( 'right' );
+
+            if ( guess == actual ) {
+              $result.find( '.drilled-it' ).html( 'DRILLED IT' );
+              $("audio")[0].play();
+            }
 
             Session.set( 'score', Session.get( 'score' ) + 1 );
 
@@ -139,7 +139,8 @@
       timer();
     },
     getRenderedPage: function( name ) {
-      var template = OBH.templates[ name ];
+      var template = OBH.templates[ name ],
+          content;
 
       if ( template ) {
         content = template();
@@ -201,19 +202,17 @@
     }
 
     var min = -1,
-      step,
-      below = Math.round( Math.random() * 10 ),
-      above = 10 - below,
-      min,
+      step = Math.pow( 9, Math.floor( log10( value ) ) ),
+      below = Math.round( Math.random() * OBH.DISCRETE_GUESS_CHUNKS ), // 0..7
+      above = OBH.DISCRETE_GUESS_CHUNKS - below, // 7 - 0..7
       max,
       startingGuess;
 
     while( min < 0 ) {
-      below--;
-      above++;
-      step = Math.pow( 9, Math.ceil( log10( value ) ) - 1 );
       min = ( value - below * step ).toFixed( 2 );
       max = ( value + above * step ).toFixed( 2 );
+      below--;
+      above++;
     }
 
     //startingGuess = ( max - min ) * Math.random() + min; //( max * .5 ).toFixed( 2 );
